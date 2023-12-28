@@ -34,7 +34,7 @@ function SearchClickDetector()
                 end
             end
         end
-        wait(8)
+        task.wait(8)
     end
 end
 
@@ -47,21 +47,18 @@ function ClickBreakable()
                     [1] = tostring(name)
                 }
                 game:GetService("ReplicatedStorage").Network.Breakables_PlayerDealDamage:FireServer(unpack(args))
-                wait(0.02)
+                task.wait(0.02)
             end
         end
-        wait(0)
+        task.wait(0)
     end
 end
 
-
 coroutine.resume(coroutine.create(function()
-    while wait(1) do
-        if lunaxshop.farmauto then
-            task.spawn(SearchClickDetector)
-            task.spawn(ClickBreakable)
-            print("Farm - Auto")
-            break
-        end
+    while task.wait(1) do
+        task.spawn(SearchClickDetector)
+        task.spawn(ClickBreakable)
+        print("Farm - Auto")
+        break
     end
 end))
