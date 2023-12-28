@@ -15,22 +15,33 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 getcoin = game:GetService("Workspace")["__THINGS"]["Orbs"]:GetChildren()
 getitem = game:GetService("Workspace")["__THINGS"]["Lootbags"]:GetChildren()
 local namesTable = {}
-lunaxshop = {}
-lunaxshop.farmauto = true
+config = {}
+config.autoclickfarm = true
 
-
-
-function SearchClickDetector()
+function AutoClickFarm()
     while true do
-        namesTable = {}
-        for _, breakable in pairs(game:GetService("Workspace").__THINGS.Breakables:GetChildren()) do
-            local breakablex = breakable:GetDescendants()
-            for _, x in pairs(breakablex) do
-                if x:FindFirstChild("ClickDetector") then
-                    local maxActivationDistance = x.ClickDetector.MaxActivationDistance
-                    if maxActivationDistance and maxActivationDistance ~= 0 then
-                        table.insert(namesTable, breakable.Name)
+        if config.autoclickfarm then
+            namesTable = {}
+            for _, breakable in pairs(game:GetService("Workspace").__THINGS.Breakables:GetChildren()) do
+                local breakablex = breakable:GetDescendants()
+                for _, x in pairs(breakablex) do
+                    if x:FindFirstChild("ClickDetector") then
+                        local maxActivationDistance = x.ClickDetector.MaxActivationDistance
+                        if maxActivationDistance and maxActivationDistance ~= 0 then
+                            table.insert(namesTable, breakable.Name)
+                        end
                     end
+                end
+            end
+
+            for round = 1, 5 do
+                for _, name in ipairs(namesTable) do
+                    print(name)
+                    local args = {
+                        [1] = tostring(name)
+                    }
+                    game:GetService("ReplicatedStorage").Network.Breakables_PlayerDealDamage:FireServer(unpack(args))
+                    task.wait(0.02)
                 end
             end
         end
@@ -38,27 +49,9 @@ function SearchClickDetector()
     end
 end
 
-function ClickBreakable()
-    while true do
-        for round = 1, 5 do
-            for _, name in ipairs(namesTable) do
-                print(name)
-                local args = {
-                    [1] = tostring(name)
-                }
-                game:GetService("ReplicatedStorage").Network.Breakables_PlayerDealDamage:FireServer(unpack(args))
-                task.wait(0.02)
-            end
-        end
-        task.wait(0)
-    end
-end
-
 coroutine.resume(coroutine.create(function()
     while task.wait(1) do
-        task.spawn(SearchClickDetector)
-        task.spawn(ClickBreakable)
-        print("Farm - Auto")
-        break
+        AutoClickFarm()
+        print("AutoClickFarm")
     end
 end))
